@@ -20,7 +20,7 @@ setup(name='git-hulahoop',
       url='https://github.com/mbr/git-hulahoop',
       license='MIT',
       packages=find_packages(exclude=['tests']),
-      install_requires=[],
+      install_requires=['click', 'python-gitlab'],
       entry_points={
           'console_scripts': [
               'git-hulahoop = git_hulahoop.cli:cli',

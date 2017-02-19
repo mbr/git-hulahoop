@@ -2,10 +2,31 @@
 
 import click
 
+from .git import GitRepo
+
 
 @click.group(help='Unnamed command line tool')
-def cli():
-    pass
+@click.option('-r',
+              '--repo',
+              default='.',
+              type=click.Path(),
+              help='Path to the repository to work on (default: .')
+@click.option(
+    '-D',
+    '--default-remote',
+    default='origin',
+    help='Remote to check for remote host if none given (default: origin')
+@click.option('-R',
+              '--remote',
+              default=None,
+              help='Remote to check for remote host')
+@click.pass_context
+def cli(ctx, repo, default_remote, remote):
+    cfg = {'repo_path': repo,
+           'repo': GitRepo(repo, remote or default_remote),
+           'default_remote': default_remote,
+           'remote': remote, }
+    ctx.obj = {'cfg': cfg}
 
 
 @cli.group('issue', help='Handle issues')
@@ -13,8 +34,11 @@ def issue():
     pass
 
 
-@issue.command()
-def list():
+@issue.command('list')
+@click.pass_obj
+def list_issues(obj):
+
+    click.echo('obj: {}'.format(obj))
     pass
 
 
