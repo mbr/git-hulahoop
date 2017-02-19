@@ -23,7 +23,7 @@ setup(name='git-hulahoop',
       install_requires=[],
       entry_points={
           'console_scripts': [
-              'git-hulahoop = git-hulahoop.cli:cli',
+              'git-hulahoop = git_hulahoop.cli:cli',
           ],
       },
       classifiers=[
