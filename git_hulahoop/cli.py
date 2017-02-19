@@ -23,10 +23,9 @@ from .git import GitRepo
 @click.pass_context
 def cli(ctx, repo, default_remote, remote):
     cfg = {'repo_path': repo,
-           'repo': GitRepo(repo, remote or default_remote),
            'default_remote': default_remote,
            'remote': remote, }
-    ctx.obj = {'cfg': cfg}
+    ctx.obj = {'cfg': cfg, 'repo': GitRepo(repo, remote or default_remote), }
 
 
 @cli.group('issue', help='Handle issues')
@@ -37,7 +36,8 @@ def issue():
 @issue.command('list')
 @click.pass_obj
 def list_issues(obj):
-
+    repo = obj['repo']
+    click.echo('Host: {}'.format(repo.host))
     click.echo('obj: {}'.format(obj))
     pass
 
