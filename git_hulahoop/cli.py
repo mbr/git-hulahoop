@@ -20,12 +20,19 @@ from .git import GitRepo
               '--remote',
               default=None,
               help='Remote to check for remote host')
+@click.option('-T',
+              '--remote-type',
+              type=click.Choice(['auto', 'gitlab'], ),
+              default='auto',
+              help='API type to use')
 @click.pass_context
-def cli(ctx, repo, default_remote, remote):
+def cli(ctx, repo, default_remote, remote, remote_type):
     cfg = {'repo_path': repo,
            'default_remote': default_remote,
            'remote': remote, }
-    ctx.obj = {'cfg': cfg, 'repo': GitRepo(repo, remote or default_remote), }
+    ctx.obj = {'cfg': cfg,
+               'repo': GitRepo(repo, remote or default_remote, None,
+                               remote_type), }
 
 
 @cli.group('issue', help='Handle issues')
@@ -37,8 +44,9 @@ def issue():
 @click.pass_obj
 def list_issues(obj):
     repo = obj['repo']
+    remote = repo.get_remote()
     click.echo('Host: {}'.format(repo.host))
-    click.echo('obj: {}'.format(obj))
+    click.echo('Remote: {}'.format(remote))
     pass
 
 
