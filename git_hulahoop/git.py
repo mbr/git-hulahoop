@@ -7,6 +7,17 @@ import gitlab
 _URL_RE = re.compile('.*?@(.*?):(.*)')
 
 
+class Issue(object):
+    def __init__(self, id, title=None, url=None, desc=None):
+        self.id = id
+        self.title = title
+        self.url = url
+        self.desc = desc
+
+    def __str__(self):
+        return '#{}: {}'.format(self.id, self.title)
+
+
 class GitConfig(object):
     def __init__(self, repo_path):
         self.repo_path = repo_path
@@ -50,7 +61,8 @@ class GitLabManager(object):
 
     def get_issues(self):
         issues = self.project.issues.list()
-        return issues
+
+        return [Issue(i.id, i.title, i.web_url, i.description) for i in issues]
 
 
 class GitRepo(object):

@@ -35,9 +35,9 @@ def issue():
 @click.pass_obj
 def list_issues(obj):
     repo = obj['repo']
-    click.echo('Host: {}'.format(repo.host))
-    click.echo('Issues: {}'.format(repo.manager.get_issues()))
-    pass
+
+    for issue in repo.manager.get_issues():
+        click.echo(issue)
 
 
 if __name__ == '__main__':
