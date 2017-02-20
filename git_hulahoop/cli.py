@@ -36,7 +36,7 @@ def issue():
 def list_issues(obj):
     repo = obj['repo']
     click.echo('Host: {}'.format(repo.host))
-    click.echo('Remote: {}'.format(repo.remote))
+    click.echo('Issues: {}'.format(repo.manager.get_issues()))
     pass
 
 
