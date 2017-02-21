@@ -60,7 +60,7 @@ class GitLabManager(object):
         return self._project
 
     def _make_issue(self, api_issue):
-        return Issue(api_issue.id, api_issue.title, api_issue.web_url,
+        return Issue(api_issue.iid, api_issue.title, api_issue.web_url,
                      api_issue.description)
 
     def get_issues(self):
