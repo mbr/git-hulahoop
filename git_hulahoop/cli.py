@@ -58,7 +58,7 @@ def list_issues(obj):
     help=
     'Message for the new issue. Up until the first dot followed by a period '
     'is interpreted as title. If no message is given, an editor is launched.')
-@click.option('-t',
+@click.option('-T',
               '--title-only',
               is_flag=True,
               default=False,
