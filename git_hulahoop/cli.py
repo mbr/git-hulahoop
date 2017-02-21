@@ -15,7 +15,7 @@ NEW_ISSUE = """\
 """
 
 
-@click.group(help='Unnamed command line tool')
+@click.group(help='Repository manager tool')
 @click.option('-r',
               '--repo',
               default='.',
