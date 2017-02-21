@@ -1,7 +1,7 @@
 git-hulahoop
 ============
 
-git **Hu**b/**La**b/**Ho**me server **op**eration utility.
+git **Hu**b/**La**b **Ho**me server **op**eration utility.
 
 Currently only does issues and only on GitLab (since that is all I needed when I wrote it). Feel free to extend!
 
