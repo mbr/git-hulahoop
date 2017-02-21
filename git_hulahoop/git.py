@@ -59,10 +59,19 @@ class GitLabManager(object):
                 '.git'))
         return self._project
 
+    def _make_issue(self, api_issue):
+        return Issue(api_issue.id, api_issue.title, api_issue.web_url,
+                     api_issue.description)
+
     def get_issues(self):
         issues = self.project.issues.list()
 
-        return [Issue(i.id, i.title, i.web_url, i.description) for i in issues]
+        return [self._make_issue(i) for i in issues]
+
+    def create_issue(self, title, description):
+        return self._make_issue(self.project.issues.create(
+            {'title': title,
+             'description': description}))
 
 
 class GitRepo(object):
