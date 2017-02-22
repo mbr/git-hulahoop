@@ -75,8 +75,12 @@ class GitLabManager(object):
 
         return self._make_issue(issues[0])
 
-    def get_issues(self):
-        issues = self.project.issues.list()
+    def get_issues(self, open_only=True):
+        kwargs = {}
+        if open_only:
+            kwargs['state'] = 'opened'
+
+        issues = self.project.issues.list(**kwargs)
 
         return [self._make_issue(i) for i in issues]
 

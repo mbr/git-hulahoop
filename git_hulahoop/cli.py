@@ -65,11 +65,15 @@ def issue():
 
 
 @issue.command('list')
+@click.option('--all',
+              is_flag=True,
+              default=False,
+              help='Show all issues, not only open ones')
 @click.pass_obj
-def list_issues(obj):
+def list_issues(obj, all):
     repo = obj['repo']
 
-    for issue in repo.manager.get_issues():
+    for issue in repo.manager.get_issues(open_only=not all):
         click.echo(issue)
 
 
