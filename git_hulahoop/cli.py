@@ -1,10 +1,22 @@
 #!/usr/bin/python3
 
 import sys
+import shutil
+import subprocess
 
 import click
+import volatile
 
 from .git import GitRepo
+
+
+def mdv_print(md):
+    with volatile.file(suffix='.md') as tmp:
+        tmp.write(md.encode('utf8'))
+        tmp.close()
+
+        subprocess.check_call(['mdv', tmp.name])
+
 
 NEW_ISSUE = """\
 {title}{extra}
@@ -30,10 +42,21 @@ NEW_ISSUE = """\
               type=click.Choice(['auto', 'gitlab'], ),
               default='auto',
               help='API type to use')
+@click.option('--mdv/--no-mdv',
+              default=None,
+              help='Enable mdv rendering (default: auto, depending on whether '
+              'an executable named `mdv` is found on the path.')
 @click.pass_context
-def cli(ctx, repo, remote, remote_type):
+def cli(ctx, repo, remote, remote_type, mdv):
+    if mdv in (None, True):
+        mdv = shutil.which('mdv')
+    else:
+        mdv = None
+
     cfg = {'repo_path': repo, 'remote': remote, }
-    ctx.obj = {'cfg': cfg, 'repo': GitRepo(repo, remote, None, remote_type), }
+    ctx.obj = {'cfg': cfg,
+               'repo': GitRepo(repo, remote, None, remote_type),
+               'mdv': mdv}
 
 
 @cli.group('issue', help='Handle issues')
@@ -119,6 +142,31 @@ def new_issue(obj, message, title_only, max_title_length):
     issue = repo.manager.create_issue(title, body)
 
     click.echo('{}'.format(issue))
+
+
+@issue.command('show')
+@click.argument('ISSUE_NO', type=int)
+@click.pass_obj
+def show_issue(obj, issue_no):
+    repo = obj['repo']
+
+    issue = repo.manager.get_issue_by_id(issue_no)
+
+    if not issue:
+        click.echo('Issue #{} not found'.format(issue_no))
+    else:
+        md = ''
+        # FIXME: finish that console util lib already!
+        header = '#{}: {}'.format(issue_no, issue.title)
+        md += header + '\n'
+        md += '=' * len(header)
+        md += '\n\n'
+        md += issue.desc
+
+        if obj['mdv']:
+            mdv_print(md)
+        else:
+            click.echo(md)
 
 
 if __name__ == '__main__':

@@ -63,6 +63,18 @@ class GitLabManager(object):
         return Issue(api_issue.iid, api_issue.title, api_issue.web_url,
                      api_issue.description)
 
+    def get_issue_by_id(self, id):
+        # unfortunately, the individual issue ids differ from the global one
+        # and there seems to be no convenient api to quiery these
+        issues = self.project.issues.list(iid=id)
+
+        if not issues:
+            return None
+
+        assert len(issues) == 1
+
+        return self._make_issue(issues[0])
+
     def get_issues(self):
         issues = self.project.issues.list()
 
