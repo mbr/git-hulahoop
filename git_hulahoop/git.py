@@ -97,7 +97,7 @@ class GitLabManager(object):
             issue._comments = [
                 self._make_comment(note)
                 for note in sorted(issues[0].notes.list(),
-                                   key=lambda n: -n.id)
+                                   key=lambda n: n.id)
             ]
 
         return issue
