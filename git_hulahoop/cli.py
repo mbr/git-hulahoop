@@ -182,3 +182,26 @@ def show_issue(obj, issue_no):
 
 if __name__ == '__main__':
     cli()
+
+
+@issue.command('comment')
+@click.argument('ISSUE_NO', type=int)
+@click.option('-m', '--message', default='')
+@click.pass_obj
+def comment_issue(obj, issue_no, message):
+    repo = obj['repo']
+
+    issue = repo.manager.get_issue_by_id(issue_no)
+
+    if not issue:
+        click.echo('Issue #{} not found'.format(issue_no))
+    else:
+        if not message:
+            message = click.edit('')
+
+        if message is None:
+            click.echo('No message entered')
+            # FIXME: use proper CLI lib...
+            return
+
+        repo.manager.add_comment_to_issue(issue_no, message)

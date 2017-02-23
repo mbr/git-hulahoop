@@ -116,6 +116,10 @@ class GitLabManager(object):
             {'title': title,
              'description': description}))
 
+    def add_comment_to_issue(self, id, body):
+        issue = self.project.issues.list(iid=id)[0]
+        issue.notes.create({'body': body})
+
 
 class GitRepo(object):
     def __init__(self, path, remote, host, remote_type):
