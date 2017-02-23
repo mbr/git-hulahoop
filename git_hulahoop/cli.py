@@ -167,6 +167,13 @@ def show_issue(obj, issue_no):
         md += '\n\n'
         md += issue.desc
 
+        for comment in issue.comments:
+            md += '\n\n---\n\n'
+            # FIXME: escaping technically needed here
+            md += '{} (*@{}*) commented:\n\n'.format(comment.author_full,
+                                                     comment.author)
+            md += comment.body + '\n'
+
         if obj['mdv']:
             mdv_print(md)
         else:

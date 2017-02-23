@@ -14,8 +14,22 @@ class Issue(object):
         self.url = url
         self.desc = desc
 
+    @property
+    def comments(self):
+        if not hasattr(self, '_comments'):
+            raise RuntimeError('Comments not retrieved')
+        return self._comments
+
     def __str__(self):
         return '#{}: {}'.format(self.id, self.title)
+
+
+class Comment(object):
+    def __init__(self, id, body, author=None, author_full=None):
+        self.id = id
+        self.body = body
+        self.author = author
+        self.author_full = author_full
 
 
 class GitConfig(object):
@@ -63,9 +77,13 @@ class GitLabManager(object):
         return Issue(api_issue.iid, api_issue.title, api_issue.web_url,
                      api_issue.description)
 
-    def get_issue_by_id(self, id):
-        # unfortunately, the individual issue ids differ from the global one
-        # and there seems to be no convenient api to quiery these
+    def _make_comment(self, api_note):
+        return Comment(api_note.id,
+                       api_note.body,
+                       api_note.author.username,
+                       api_note.author.name, )
+
+    def get_issue_by_id(self, id, with_comments=True):
         issues = self.project.issues.list(iid=id)
 
         if not issues:
@@ -73,7 +91,16 @@ class GitLabManager(object):
 
         assert len(issues) == 1
 
-        return self._make_issue(issues[0])
+        issue = self._make_issue(issues[0])
+
+        if with_comments:
+            issue._comments = [
+                self._make_comment(note)
+                for note in sorted(issues[0].notes.list(),
+                                   key=lambda n: -n.id)
+            ]
+
+        return issue
 
     def get_issues(self, open_only=True):
         kwargs = {}
