@@ -38,8 +38,7 @@ class GitConfig(object):
 
     def __getitem__(self, key):
         raw = subprocess.check_output(
-            ['git', 'config', '--get', key],
-            cwd=self.repo_path)
+            ['git', 'config', '--get', key], cwd=self.repo_path)
 
         return raw.rstrip(b'\n').decode('utf8')
 
@@ -69,8 +68,8 @@ class GitLabManager(object):
     @property
     def project(self):
         if not self._project:
-            self._project = self.api.projects.get(self.repo.url_path.rstrip(
-                '.git'))
+            self._project = self.api.projects.get(
+                self.repo.url_path.rstrip('.git'))
         return self._project
 
     def _make_issue(self, api_issue):
@@ -78,10 +77,11 @@ class GitLabManager(object):
                      api_issue.description)
 
     def _make_comment(self, api_note):
-        return Comment(api_note.id,
-                       api_note.body,
-                       api_note.author.username,
-                       api_note.author.name, )
+        return Comment(
+            api_note.id,
+            api_note.body,
+            api_note.author.username,
+            api_note.author.name, )
 
     def get_issue_by_id(self, id, with_comments=True):
         issues = self.project.issues.list(iid=id)
@@ -96,8 +96,7 @@ class GitLabManager(object):
         if with_comments:
             issue._comments = [
                 self._make_comment(note)
-                for note in sorted(issues[0].notes.list(),
-                                   key=lambda n: n.id)
+                for note in sorted(issues[0].notes.list(), key=lambda n: n.id)
             ]
 
         return issue
@@ -112,9 +111,11 @@ class GitLabManager(object):
         return [self._make_issue(i) for i in issues]
 
     def create_issue(self, title, description):
-        return self._make_issue(self.project.issues.create(
-            {'title': title,
-             'description': description}))
+        return self._make_issue(
+            self.project.issues.create({
+                'title': title,
+                'description': description
+            }))
 
     def add_comment_to_issue(self, id, body):
         issue = self.project.issues.list(iid=id)[0]
@@ -136,8 +137,8 @@ class GitRepo(object):
 
         self.config = GitConfig(self.repo_path)
         self.remote_url = subprocess.check_output(
-            ['git', 'config', '--get', 'remote.{}.url'.format(self.remote)
-             ]).decode('UTF-8').rstrip()
+            ['git', 'config', '--get',
+             'remote.{}.url'.format(self.remote)]).decode('UTF-8').rstrip()
 
         # FIXME: proper URL handling is hard and not implemented yet. urllib
         # turned out to be less-than-satisfactory. sorry.
@@ -145,8 +146,8 @@ class GitRepo(object):
         m = _URL_RE.match(self.remote_url)
 
         if not m:
-            raise ValueError('Did not understand remote URL {}'.format(
-                self.remote_url))
+            raise ValueError(
+                'Did not understand remote URL {}'.format(self.remote_url))
 
         self.host = m.group(1)
         self.url_path = m.group(2)

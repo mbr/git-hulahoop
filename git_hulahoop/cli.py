@@ -28,24 +28,29 @@ NEW_ISSUE = """\
 
 
 @click.group(help='Repository manager tool')
-@click.option('-r',
-              '--repo',
-              default='.',
-              type=click.Path(),
-              help='Path to the repository to work on (default: .')
-@click.option('-R',
-              '--remote',
-              default='origin',
-              help='Remote to check for remote host (default: origin)')
-@click.option('-T',
-              '--remote-type',
-              type=click.Choice(['auto', 'gitlab'], ),
-              default='auto',
-              help='API type to use')
-@click.option('--mdv/--no-mdv',
-              default=None,
-              help='Enable mdv rendering (default: auto, depending on whether '
-              'an executable named `mdv` is found on the path.')
+@click.option(
+    '-r',
+    '--repo',
+    default='.',
+    type=click.Path(),
+    help='Path to the repository to work on (default: .')
+@click.option(
+    '-R',
+    '--remote',
+    default='origin',
+    help='Remote to check for remote host (default: origin)')
+@click.option(
+    '-T',
+    '--remote-type',
+    type=click.Choice(
+        ['auto', 'gitlab'], ),
+    default='auto',
+    help='API type to use')
+@click.option(
+    '--mdv/--no-mdv',
+    default=None,
+    help='Enable mdv rendering (default: auto, depending on whether '
+    'an executable named `mdv` is found on the path.')
 @click.pass_context
 def cli(ctx, repo, remote, remote_type, mdv):
     if mdv in (None, True):
@@ -53,10 +58,15 @@ def cli(ctx, repo, remote, remote_type, mdv):
     else:
         mdv = None
 
-    cfg = {'repo_path': repo, 'remote': remote, }
-    ctx.obj = {'cfg': cfg,
-               'repo': GitRepo(repo, remote, None, remote_type),
-               'mdv': mdv}
+    cfg = {
+        'repo_path': repo,
+        'remote': remote,
+    }
+    ctx.obj = {
+        'cfg': cfg,
+        'repo': GitRepo(repo, remote, None, remote_type),
+        'mdv': mdv
+    }
 
 
 @cli.group('issue', help='Handle issues')
@@ -65,10 +75,11 @@ def issue():
 
 
 @issue.command('list')
-@click.option('--all',
-              is_flag=True,
-              default=False,
-              help='Show all issues, not only open ones')
+@click.option(
+    '--all',
+    is_flag=True,
+    default=False,
+    help='Show all issues, not only open ones')
 @click.pass_obj
 def list_issues(obj, all):
     repo = obj['repo']
@@ -82,14 +93,10 @@ def list_issues(obj, all):
     '-m',
     '--message',
     default='',
-    help=
-    'Message for the new issue. Up until the first dot followed by a period '
+    help='Message for the new issue. Up until the first dot followed by a period '
     'is interpreted as title. If no message is given, an editor is launched.')
-@click.option('-T',
-              '--title-only',
-              is_flag=True,
-              default=False,
-              help='Title-only.')
+@click.option(
+    '-T', '--title-only', is_flag=True, default=False, help='Title-only.')
 @click.option('-M', '--max-title-length', default=140)
 @click.pass_obj
 def new_issue(obj, message, title_only, max_title_length):
@@ -103,8 +110,8 @@ def new_issue(obj, message, title_only, max_title_length):
             body = parts.pop(0).lstrip()
 
     if not title or not (body or title_only):
-        raw = click.edit(NEW_ISSUE.format(title=title,
-                                          extra='\n\n' + body if body else ''))
+        raw = click.edit(
+            NEW_ISSUE.format(title=title, extra='\n\n' + body if body else ''))
 
         title = []
         body = []
@@ -136,8 +143,8 @@ def new_issue(obj, message, title_only, max_title_length):
         sys.exit(1)
 
     if len(title) > max_title_length:
-        click.echo('Title exceeds {} characters'.format(max_title_length),
-                   err=1)
+        click.echo(
+            'Title exceeds {} characters'.format(max_title_length), err=1)
         sys.exit(1)
 
     # we've got a valid title and description, add issue
